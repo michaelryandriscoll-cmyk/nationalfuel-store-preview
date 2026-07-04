@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Shop — National Fuel Company Store</title>
+<meta name="description" content="Browse and order National Fuel branded apparel.">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700;900&family=Roboto+Mono:wght@500&display=swap" rel="stylesheet">
+
+<style>
+  :root{
+    --navy: #0B1F3A;
+    --navy-2: #13315C;
+    --flame: #E8762C;
+    --flame-light: #F4A64D;
+    --paper: #F6F4EF;
+    --paper-2: #EFEBE1;
+    --ink: #16181D;
+    --ink-soft: #4B5160;
+    --line: #DBD5C6;
+    --white: #FFFFFF;
+    --radius: 4px;
+    --max: 1240px;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0; background:var(--paper); color:var(--ink);
+    font-family:'Roboto', sans-serif; -webkit-font-smoothing:antialiased;
+  }
+  h1,h2,h3{font-family:'Roboto', sans-serif; font-weight:700; margin:0; letter-spacing:-0.01em;}
+  .mono{font-family:'Roboto Mono', monospace; letter-spacing:0.02em;}
+  a{color:inherit;}
+  button{font-family:inherit; cursor:pointer;}
+  .wrap{max-width:var(--max); margin:0 auto; padding:0 32px;}
+  :focus-visible{outline:2px solid var(--flame); outline-offset:2px;}
+
+  /* Header */
+  header.site{position:sticky; top:0; z-index:40; background:var(--navy); color:var(--white); border-bottom:1px solid rgba(255,255,255,0.08);}
+  .header-inner{display:flex; align-items:center; justify-content:space-between; padding:16px 32px; max-width:var(--max); margin:0 auto; gap:24px;}
+  .brand{display:flex; align-items:center; gap:14px; text-decoration:none;}
+  .brand img.logo{height:32px; width:auto; flex-shrink:0; display:block;}
+  .brand-divider{width:1px; height:26px; background:rgba(255,255,255,0.25); flex-shrink:0;}
+  .brand-text{line-height:1.1;}
+  .brand-text .store{font-size:10px; letter-spacing:0.14em; text-transform:uppercase; color:var(--flame-light); font-weight:600;}
+  nav.primary{display:flex; gap:26px; font-size:14px; font-weight:500;}
+  nav.primary a{text-decoration:none; color:rgba(255,255,255,0.82); padding:6px 0; border-bottom:2px solid transparent; transition:border-color .15s ease, color .15s ease;}
+  nav.primary a:hover, nav.primary a.active{color:var(--white); border-color:var(--flame);}
+  .cart-btn{
+    background:transparent; border:1px solid rgba(255,255,255,0.3); color:var(--white);
+    border-radius:var(--radius); padding:8px 14px; display:flex; align-items:center; gap:8px;
+    font-size:14px; font-weight:600; transition:background .15s ease, border-color .15s ease;
+  }
+  .cart-btn:hover{background:rgba(255,255,255,0.08); border-color:rgba(255,255,255,0.5);}
+  .cart-count{
+    background:var(--flame); color:var(--navy); font-weight:700; font-size:12px;
+    min-width:18px; height:18px; border-radius:50%; display:flex; align-items:center; justify-content:center; padding:0 2px;
+  }
+
+  /* Page title strip — replaces the big hero */
+  .page-title{padding:28px 0 4px;}
+  .page-title h1{font-size:22px;}
+  .page-title p{color:var(--ink-soft); font-size:13px; margin-top:4px;}
+
+  /* Filter bar */
+  .filter-bar{position:sticky; top:63px; z-index:30; background:var(--paper); border-bottom:1px solid var(--line); margin-top:18px;}
+  .filter-inner{max-width:var(--max); margin:0 auto; padding:14px 32px; display:flex; align-items:center; justify-content:space-between; gap:20px; flex-wrap:wrap;}
+  .pills{display:flex; gap:8px; flex-wrap:wrap;}
+  .pill{background:var(--white); border:1px solid var(--line); color:var(--ink); padding:8px 16px; border-radius:999px; font-size:13px; font-weight:600; transition:all .15s ease;}
+  .pill:hover{border-color:var(--navy);}
+  .pill.active{background:var(--navy); border-color:var(--navy); color:var(--white);}
+  .result-count{font-size:13px; color:var(--ink-soft); font-family:'Roboto Mono', monospace;}
+
+  /* Grid */
+  .shop{padding:32px 0 64px;}
+  .grid{display:grid; grid-template-columns:repeat(4, 1fr); gap:24px;}
+  .card{background:var(--white); border:1px solid var(--line); border-radius:6px; overflow:hidden; display:flex; flex-direction:column; transition:box-shadow .18s ease, transform .18s ease;}
+  .card:hover{box-shadow:0 10px 26px rgba(11,31,58,0.08); transform:translateY(-2px);}
+  .card-media{background:var(--paper-2); aspect-ratio:1/1; display:flex; align-items:center; justify-content:center; position:relative; padding:18px; border-bottom:1px solid var(--line);}
+  .card-media svg{width:70%; height:70%; stroke:var(--navy); fill:none; stroke-width:2.6; stroke-linecap:round; stroke-linejoin:round;}
+  .tag{position:absolute; top:12px; left:12px; background:var(--navy); color:var(--white); font-size:10px; font-weight:700; letter-spacing:0.06em; text-transform:uppercase; padding:4px 9px; border-radius:3px;}
+  .tag.new{background:var(--flame); color:var(--navy);}
+  .card-body{padding:16px 18px 18px; display:flex; flex-direction:column; gap:10px; flex:1;}
+  .card-cat{font-size:11px; text-transform:uppercase; letter-spacing:0.08em; color:var(--ink-soft); font-weight:600;}
+  .card-name{font-family:'Roboto', sans-serif; font-weight:700; font-size:16px; font-weight:600; line-height:1.3;}
+  .card-desc{font-size:13px; color:var(--ink-soft); line-height:1.5;}
+  .swatches{display:flex; gap:6px; margin-top:2px;}
+  .swatch{width:16px; height:16px; border-radius:50%; border:1px solid rgba(0,0,0,0.15);}
+  .card-bottom{margin-top:auto; display:flex; align-items:center; justify-content:space-between; gap:10px; padding-top:10px;}
+  .price{font-family:'Roboto Mono', monospace; font-weight:500; font-size:15px;}
+  .size-select{font-family:'Roboto Mono', monospace; font-size:12px; border:1px solid var(--line); border-radius:4px; padding:6px 8px; background:var(--white); color:var(--ink);}
+  .add-row{display:flex; gap:8px;}
+  .add-btn{flex:1; background:var(--navy); color:var(--white); border:none; padding:10px 12px; border-radius:4px; font-weight:600; font-size:13px; transition:background .15s ease;}
+  .add-btn:hover{background:var(--navy-2);}
+  .add-btn.added{background:#2f7a4d;}
+
+  footer.site{background:var(--navy); color:rgba(255,255,255,0.55); padding:22px 0; font-size:12px;}
+  .footer-inner{max-width:var(--max); margin:0 auto; padding:0 32px; display:flex; justify-content:space-between; flex-wrap:wrap; gap:8px;}
+
+  /* Cart drawer */
+  .overlay{position:fixed; inset:0; background:rgba(11,31,58,0.45); opacity:0; pointer-events:none; transition:opacity .2s ease; z-index:49;}
+  .overlay.open{opacity:1; pointer-events:auto;}
+  .drawer{position:fixed; top:0; right:0; height:100%; width:400px; max-width:92vw; background:var(--white); z-index:50; transform:translateX(100%); transition:transform .25s ease; display:flex; flex-direction:column; box-shadow:-12px 0 32px rgba(0,0,0,0.18);}
+  .drawer.open{transform:translateX(0);}
+  .drawer-head{padding:20px 22px; border-bottom:1px solid var(--line); display:flex; align-items:center; justify-content:space-between;}
+  .drawer-head h3{font-size:17px;}
+  .close-btn{background:none; border:none; font-size:22px; line-height:1; color:var(--ink-soft); padding:4px 6px;}
+  .close-btn:hover{color:var(--ink);}
+  .drawer-body{flex:1; overflow-y:auto; padding:16px 22px;}
+  .drawer-empty{color:var(--ink-soft); font-size:14px; padding:40px 0; text-align:center;}
+  .drawer-line{display:flex; gap:12px; padding:14px 0; border-bottom:1px solid var(--line);}
+  .drawer-line .dl-media{width:56px; height:56px; background:var(--paper-2); border-radius:4px; flex-shrink:0; display:flex; align-items:center; justify-content:center; padding:8px;}
+  .drawer-line .dl-media svg{stroke:var(--navy); fill:none; stroke-width:2.6;}
+  .dl-info{flex:1; min-width:0;}
+  .dl-name{font-weight:600; font-size:14px;}
+  .dl-meta{font-size:12px; color:var(--ink-soft); margin-top:2px; font-family:'Roboto Mono', monospace;}
+  .dl-remove{font-size:12px; color:var(--flame); background:none; border:none; padding:0; margin-top:6px; font-weight:600;}
+  .dl-price{font-family:'Roboto Mono', monospace; font-size:13px; white-space:nowrap;}
+  .drawer-footer{border-top:1px solid var(--line); padding:18px 22px 22px;}
+  .drawer-total{display:flex; justify-content:space-between; font-weight:700; font-size:15px; margin-bottom:14px;}
+  .checkout-note{font-size:12px; color:var(--ink-soft); margin-top:10px; line-height:1.5;}
+
+  @media (max-width:1000px){ .grid{grid-template-columns:repeat(2, 1fr);} }
+  @media (max-width:720px){
+    .header-inner, .wrap, .filter-inner, .footer-inner{padding-left:20px; padding-right:20px;}
+    nav.primary{display:none;}
+    .filter-bar{top:63px;}
+    .grid{grid-template-columns:1fr 1fr; gap:14px;}
+    .drawer{width:100%;}
+  }
+  @media (max-width:480px){ .grid{grid-template-columns:1fr;} }
+</style>
+</head>
+<body>
+
+<header class="site">
+  <div class="header-inner">
+    <a class="brand" href="index.html">
+      <img class="logo" src="data:image/png;base64,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" alt="National Fuel">
+      <span class="brand-divider" aria-hidden="true"></span>
+      <span class="brand-text"><span class="store">Company Store</span></span>
+    </a>
+    <nav class="primary" aria-label="Primary">
+      <a href="index.html">Home</a>
+      <a href="shop.html" class="active">Shop</a>
+    </nav>
+    <button class="cart-btn" id="cartOpenBtn" aria-haspopup="dialog" aria-controls="cartDrawer">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.7 13.4a2 2 0 0 0 2 1.6h9.7a2 2 0 0 0 2-1.6L23 6H6"/></svg>
+      Cart
+      <span class="cart-count" id="cartCount">0</span>
+    </button>
+  </div>
+</header>
+
+<div class="wrap page-title">
+  <h1>Shop all apparel</h1>
+  <p>Sizes S&ndash;4XL on apparel, standard options on gear. Prices shown are at cost &mdash; no markup.</p>
+</div>
+
+<div class="filter-bar">
+  <div class="filter-inner">
+    <div class="pills" id="pillGroup">
+      <button class="pill active" data-filter="All">All</button>
+      <button class="pill" data-filter="Outerwear">Outerwear</button>
+      <button class="pill" data-filter="Polos & Knits">Polos &amp; Knits</button>
+      <button class="pill" data-filter="Tees & Fleece">Tees &amp; Fleece</button>
+      <button class="pill" data-filter="Headwear">Headwear</button>
+      <button class="pill" data-filter="Gear & Accessories">Gear &amp; Accessories</button>
+    </div>
+    <span class="result-count mono" id="resultCount">14 items</span>
+  </div>
+</div>
+
+<main>
+<section class="shop wrap">
+  <div class="grid" id="productGrid"><!-- injected by JS --></div>
+</section>
+</main>
+
+<footer class="site">
+  <div class="footer-inner">
+    <span>&copy; 2026 National Fuel Company Store &mdash; internal prototype for review.</span>
+    <span class="mono">Built by Buffalogo Co.</span>
+  </div>
+</footer>
+
+<div class="overlay" id="overlay"></div>
+<aside class="drawer" id="cartDrawer" role="dialog" aria-label="Shopping cart" aria-hidden="true">
+  <div class="drawer-head">
+    <h3>Your cart</h3>
+    <button class="close-btn" id="cartCloseBtn" aria-label="Close cart">&times;</button>
+  </div>
+  <div class="drawer-body" id="drawerBody">
+    <div class="drawer-empty">Your cart is empty.</div>
+  </div>
+  <div class="drawer-footer">
+    <div class="drawer-total"><span>Estimated total</span><span class="mono" id="drawerTotal">$0.00</span></div>
+    <button class="add-btn" id="checkoutBtn" style="width:100%;">Continue to checkout</button>
+    <p class="checkout-note">Prototype only &mdash; no payment is processed. Final checkout will confirm employee ID, size, and delivery location.</p>
+  </div>
+</aside>
+
+<script>
+/* Garment icon library (line-art) */
+const icons = {
+  jacket: `<svg viewBox="0 0 100 100"><path d="M35 14 22 22 12 40l8 8 6-6v40h48V42l6 6 8-8-10-18-13-8"/><path d="M35 14c3 6 8 10 15 10s12-4 15-10"/><path d="M50 24v58"/><path d="M28 60h6M28 70h6"/></svg>`,
+  vest: `<svg viewBox="0 0 100 100"><path d="M38 16 26 26l6 12-8 6v38h52V44l-8-6 6-12-12-10"/><path d="M38 16c2 7 6 12 12 12s10-5 12-12"/><path d="M50 28v54"/></svg>`,
+  quarterzip: `<svg viewBox="0 0 100 100"><path d="M34 15 18 25 8 44l9 8 7-9v45h52V43l7 9 9-8-10-19-16-10"/><path d="M50 18v20"/><path d="M46 15c0 6 2 9 4 9s4-3 4-9"/><path d="M20 62h6M20 74h6M74 62h-6M74 74h-6"/></svg>`,
+  hoodie: `<svg viewBox="0 0 100 100"><path d="M32 20c-6 2-10 8-10 16l-10 8 8 8 8-7v45h44V45l8 7 8-8-10-8c0-8-4-14-10-16"/><path d="M32 20c4 10 9 15 18 15s14-5 18-15"/><path d="M50 35c-3 8-3 16 0 24"/></svg>`,
+  polo: `<svg viewBox="0 0 100 100"><path d="M36 16 20 24l4 14 8-4v55h36V34l8 4 4-14-16-8"/><path d="M36 16c3 6 8 9 14 9s11-3 14-9"/><path d="M44 16v14l6 6 6-6V16"/><path d="M44 25v6M56 25v6"/></svg>`,
+  tee: `<svg viewBox="0 0 100 100"><path d="M36 17 18 26l3 13 11-4v54h36V35l11 4 3-13-18-9"/><path d="M36 17c3 7 8 11 14 11s11-4 14-11"/></svg>`,
+  beanie: `<svg viewBox="0 0 100 100"><path d="M22 58c0-18 12-32 28-32s28 14 28 32"/><rect x="20" y="58" width="60" height="14" rx="2"/><path d="M30 65h40M30 71h40" stroke-width="1.6"/><circle cx="50" cy="20" r="4"/><path d="M50 24v6"/></svg>`,
+  cap: `<svg viewBox="0 0 100 100"><path d="M20 55a30 30 0 0 1 60 0"/><path d="M14 58c22 8 50 8 72 0" /><path d="M50 25v6" /><circle cx="50" cy="23" r="3"/><path d="M40 40h20" stroke-width="1.6"/></svg>`,
+  golfballs: `<svg viewBox="0 0 100 100"><rect x="37" y="18" width="26" height="62" rx="13"/><circle cx="50" cy="30" r="2.2"/><circle cx="44" cy="38" r="1.4"/><circle cx="56" cy="38" r="1.4"/><circle cx="50" cy="45" r="1.4"/><circle cx="44" cy="52" r="1.4"/><circle cx="56" cy="52" r="1.4"/><circle cx="50" cy="59" r="1.4"/><circle cx="44" cy="66" r="1.4"/><circle cx="56" cy="66" r="1.4"/></svg>`,
+  pen: `<svg viewBox="0 0 100 100"><path d="M28 72 66 34a6 6 0 0 1 8 8L36 80l-12 3z"/><path d="M60 40l8 8"/><path d="M24 83l4-11"/></svg>`,
+  koozie: `<svg viewBox="0 0 100 100"><path d="M34 28h32v46a4 4 0 0 1-4 4H38a4 4 0 0 1-4-4z"/><path d="M34 40h32M34 52h32" stroke-width="1.6"/></svg>`,
+  bottle: `<svg viewBox="0 0 100 100"><path d="M42 14h16v9l6 7v51a4 4 0 0 1-4 4H40a4 4 0 0 1-4-4V30l6-7z"/><path d="M40 42h20" stroke-width="1.6"/></svg>`,
+  tumbler: `<svg viewBox="0 0 100 100"><path d="M36 24h28l-3 56a4 4 0 0 1-4 4H43a4 4 0 0 1-4-4z"/><ellipse cx="50" cy="24" rx="14" ry="4"/><path d="M64 36h7a6 6 0 0 1 0 12h-6" /></svg>`,
+  duffel: `<svg viewBox="0 0 100 100"><rect x="14" y="42" width="72" height="34" rx="13"/><path d="M30 42c0-10 8-16 20-16s20 6 20 16"/><path d="M14 56h72" stroke-width="1.6"/><circle cx="50" cy="59" r="2.6"/></svg>`
+};
+
+const products = [
+  { id:'nf-01', name:'Ridgeline Insulated Field Jacket', cat:'Outerwear', desc:'Waterproof shell, quilted lining, NF Blue.', price:64, colors:['#0B1F3A','#3A3A3A'], icon:'jacket', tag:'Best seller' },
+  { id:'nf-02', name:'Trailhead Softshell Jacket', cat:'Outerwear', desc:'Wind-resistant softshell for shoulder-season shifts.', price:52, colors:['#0B1F3A','#4B5160'], icon:'jacket', tag:null },
+  { id:'nf-03', name:'Depot Fleece Vest', cat:'Outerwear', desc:'Mid-weight fleece, zip pockets, layers under a coat.', price:34, colors:['#0B1F3A','#E8762C'], icon:'vest', tag:null },
+  { id:'nf-04', name:'Lineman Quarter-Zip Pullover', cat:'Outerwear', desc:'Brushed fleece interior, chest embroidery.', price:38, colors:['#13315C','#16181D'], icon:'quarterzip', tag:'New' },
+  { id:'nf-05', name:'Crew Performance Polo', cat:'Polos & Knits', desc:'Moisture-wicking pique, embroidered flame mark.', price:26, colors:['#0B1F3A','#FFFFFF','#E8762C'], icon:'polo', tag:'Best seller' },
+  { id:'nf-06', name:'Dispatch Long-Sleeve Polo', cat:'Polos & Knits', desc:'Same fit as the classic polo, built for cooler days.', price:29, colors:['#0B1F3A','#4B5160'], icon:'polo', tag:null },
+  { id:'nf-07', name:'Office Pique Polo — Women\u2019s Cut', cat:'Polos & Knits', desc:'Tailored fit, same fabric and flame embroidery.', price:26, colors:['#0B1F3A','#FFFFFF'], icon:'polo', tag:null },
+  { id:'nf-08', name:'Everyday Crewneck Tee', cat:'Tees & Fleece', desc:'Ringspun cotton, screen-printed wordmark.', price:14, colors:['#0B1F3A','#FFFFFF','#4B5160'], icon:'tee', tag:null },
+  { id:'nf-09', name:'Long-Sleeve Job Site Tee', cat:'Tees & Fleece', desc:'Heavier cotton blend for cooler mornings on site.', price:18, colors:['#0B1F3A','#E8762C'], icon:'tee', tag:null },
+  { id:'nf-10', name:'Substation Pullover Hoodie', cat:'Tees & Fleece', desc:'Heavyweight fleece, kangaroo pocket, drawcord hood.', price:36, colors:['#0B1F3A','#16181D'], icon:'hoodie', tag:'Best seller' },
+  { id:'nf-11', name:'Crew Zip Hoodie', cat:'Tees & Fleece', desc:'Full-zip version of the Substation hoodie.', price:40, colors:['#13315C','#4B5160'], icon:'hoodie', tag:null },
+  { id:'nf-12', name:'Winter Watch Cap', cat:'Headwear', desc:'Cuffed knit beanie, embroidered flame mark.', price:12, colors:['#0B1F3A','#16181D'], icon:'beanie', tag:null },
+  { id:'nf-13', name:'Structured Twill Cap', cat:'Headwear', desc:'Adjustable six-panel cap, curved brim.', price:16, colors:['#0B1F3A','#E8762C'], icon:'cap', tag:'Best seller' },
+  { id:'nf-14', name:'Unstructured Dad Cap', cat:'Headwear', desc:'Low-profile fit, soft cotton twill.', price:14, colors:['#4B5160','#FFFFFF'], icon:'cap', tag:'New' },
+  { id:'nf-15', name:'Sleeve of Golf Balls', cat:'Gear & Accessories', desc:'Three tour-grade balls, flame mark printed on each.', price:9, colors:['#FFFFFF'], icon:'golfballs', tag:'New', options:['Sleeve of 3','Dozen'] },
+  { id:'nf-16', name:'Flame Mark Ballpoint Pen', cat:'Gear & Accessories', desc:'Smooth-writing metal pen, laser-engraved logo.', price:3, colors:['#0B1F3A','#4B5160'], icon:'pen', tag:null, options:['Single','Box of 12'] },
+  { id:'nf-17', name:'Can Koozie', cat:'Gear & Accessories', desc:'Neoprene can cooler, keeps drinks cold on site.', price:5, colors:['#0B1F3A','#E8762C'], icon:'koozie', tag:null, options:['Single','4-Pack'] },
+  { id:'nf-18', name:'Insulated Water Bottle', cat:'Gear & Accessories', desc:'24oz stainless steel, double-wall insulation.', price:22, colors:['#0B1F3A','#4B5160'], icon:'bottle', tag:'Best seller', options:['One size'] },
+  { id:'nf-19', name:'Travel Coffee Tumbler', cat:'Gear & Accessories', desc:'16oz leak-proof lid, keeps coffee hot on the road.', price:24, colors:['#0B1F3A','#16181D'], icon:'tumbler', tag:'New', options:['One size'] },
+  { id:'nf-20', name:'Weekend Duffel Bag', cat:'Gear & Accessories', desc:'Durable canvas, reinforced straps, embroidered logo.', price:44, colors:['#0B1F3A','#4B5160'], icon:'duffel', tag:null, options:['One size'] },
+];
+
+const sizes = ['S','M','L','XL','2XL','3XL','4XL'];
+
+const grid = document.getElementById('productGrid');
+const resultCount = document.getElementById('resultCount');
+
+function renderGrid(filter){
+  const list = filter === 'All' ? products : products.filter(p => p.cat === filter);
+  resultCount.textContent = `${list.length} item${list.length !== 1 ? 's' : ''}`;
+  grid.innerHTML = list.map(p => `
+    <article class="card" data-id="${p.id}">
+      <div class="card-media">
+        ${p.tag ? `<span class="tag ${p.tag === 'New' ? 'new' : ''}">${p.tag}</span>` : ''}
+        ${icons[p.icon]}
+      </div>
+      <div class="card-body">
+        <div class="card-cat">${p.cat}</div>
+        <div class="card-name">${p.name}</div>
+        <div class="card-desc">${p.desc}</div>
+        <div class="swatches" aria-label="Available colors">
+          ${p.colors.map(c => `<span class="swatch" style="background:${c}"></span>`).join('')}
+        </div>
+        <div class="card-bottom">
+          <span class="price">$${p.price.toFixed(2)}</span>
+          <select class="size-select" aria-label="Select option for ${p.name}">
+            ${(p.options || sizes).map(s => `<option value="${s}">${s}</option>`).join('')}
+          </select>
+        </div>
+        <div class="add-row">
+          <button class="add-btn" data-add="${p.id}">Add to cart</button>
+        </div>
+      </div>
+    </article>
+  `).join('');
+}
+
+/* Read ?cat= from URL to preselect a filter coming from the home page */
+const params = new URLSearchParams(window.location.search);
+const initialCat = params.get('cat') || 'All';
+document.querySelectorAll('.pill').forEach(p => p.classList.toggle('active', p.getAttribute('data-filter') === initialCat));
+renderGrid(initialCat);
+
+document.querySelectorAll('[data-filter]').forEach(el => {
+  el.addEventListener('click', (e) => {
+    const val = el.getAttribute('data-filter');
+    document.querySelectorAll('.pill').forEach(p => p.classList.toggle('active', p.getAttribute('data-filter') === val));
+    renderGrid(val);
+  });
+});
+
+/* Cart — persisted in localStorage so it carries across pages */
+let cart = JSON.parse(localStorage.getItem('nf_cart') || '[]');
+
+function saveCart(){ localStorage.setItem('nf_cart', JSON.stringify(cart)); }
+
+function addToCart(id, size){
+  const p = products.find(x => x.id === id);
+  const existing = cart.find(l => l.id === id && l.size === size);
+  if(existing){ existing.qty += 1; }
+  else { cart.push({ id:p.id, name:p.name, price:p.price, icon:p.icon, size, qty:1 }); }
+  saveCart();
+  renderCart();
+}
+
+function removeLine(index){
+  cart.splice(index,1);
+  saveCart();
+  renderCart();
+}
+
+function renderCart(){
+  const body = document.getElementById('drawerBody');
+  const countEl = document.getElementById('cartCount');
+  const totalEl = document.getElementById('drawerTotal');
+  const totalItems = cart.reduce((s,l) => s + l.qty, 0);
+  countEl.textContent = totalItems;
+
+  if(cart.length === 0){
+    body.innerHTML = `<div class="drawer-empty">Your cart is empty.</div>`;
+    totalEl.textContent = '$0.00';
+    return;
+  }
+
+  body.innerHTML = cart.map((l, i) => `
+    <div class="drawer-line">
+      <div class="dl-media">${icons[l.icon]}</div>
+      <div class="dl-info">
+        <div class="dl-name">${l.name}</div>
+        <div class="dl-meta">${l.size} &middot; Qty ${l.qty}</div>
+        <button class="dl-remove" data-remove="${i}">Remove</button>
+      </div>
+      <div class="dl-price">$${(l.price * l.qty).toFixed(2)}</div>
+    </div>
+  `).join('');
+
+  const total = cart.reduce((s,l) => s + l.price * l.qty, 0);
+  totalEl.textContent = `$${total.toFixed(2)}`;
+}
+
+grid.addEventListener('click', (e) => {
+  const btn = e.target.closest('[data-add]');
+  if(!btn) return;
+  const card = btn.closest('.card');
+  const size = card.querySelector('.size-select').value;
+  addToCart(btn.getAttribute('data-add'), size);
+  const originalText = btn.textContent;
+  btn.textContent = 'Added ✓';
+  btn.classList.add('added');
+  setTimeout(() => { btn.textContent = originalText; btn.classList.remove('added'); }, 1100);
+});
+
+document.getElementById('drawerBody').addEventListener('click', (e) => {
+  const btn = e.target.closest('[data-remove]');
+  if(!btn) return;
+  removeLine(Number(btn.getAttribute('data-remove')));
+});
+
+const drawer = document.getElementById('cartDrawer');
+const overlay = document.getElementById('overlay');
+function openDrawer(){ drawer.classList.add('open'); overlay.classList.add('open'); drawer.setAttribute('aria-hidden','false'); }
+function closeDrawer(){ drawer.classList.remove('open'); overlay.classList.remove('open'); drawer.setAttribute('aria-hidden','true'); }
+document.getElementById('cartOpenBtn').addEventListener('click', openDrawer);
+document.getElementById('cartCloseBtn').addEventListener('click', closeDrawer);
+overlay.addEventListener('click', closeDrawer);
+document.addEventListener('keydown', (e) => { if(e.key === 'Escape') closeDrawer(); });
+
+document.getElementById('checkoutBtn').addEventListener('click', () => {
+  if(cart.length === 0){ return; }
+  alert('Prototype checkout — in the live store this step will confirm your employee ID, delivery location, and payment or payroll deduction preference before submitting the order.');
+});
+
+renderCart();
+</script>
+
+</body>
+</html>
