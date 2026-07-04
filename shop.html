@@ -370,7 +370,7 @@ document.addEventListener('keydown', (e) => { if(e.key === 'Escape') closeDrawer
 
 document.getElementById('checkoutBtn').addEventListener('click', () => {
   if(cart.length === 0){ return; }
-  alert('Prototype checkout — in the live store this step will confirm your employee ID, delivery location, and payment or payroll deduction preference before submitting the order.');
+  alert('Prototype checkout — in the live store this step will confirm your employee ID, delivery location, and payment details before submitting the order.');
 });
 
 renderCart();
