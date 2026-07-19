@@ -129,12 +129,6 @@
   .drawer-footer{border-top:1px solid var(--line); padding:18px 22px 22px;}
   .drawer-total{display:flex; justify-content:space-between; font-weight:700; font-size:15px; margin-bottom:14px;}
   .checkout-note{font-size:12px; color:var(--ink-soft); margin-top:10px; line-height:1.5;}
-  .employee-id-label{display:block; font-size:11px; text-transform:uppercase; letter-spacing:0.06em; color:var(--ink-soft); font-weight:600; margin-bottom:6px;}
-  .employee-id-input{
-    width:100%; border:1px solid var(--line); border-radius:4px; padding:10px 12px;
-    font-family:'Roboto Mono', monospace; font-size:13px; color:var(--ink); background:var(--white);
-  }
-  .employee-id-input:focus{border-color:var(--navy);}
 
   @media (max-width:1000px){ .grid{grid-template-columns:repeat(2, 1fr);} }
   @media (max-width:720px){
@@ -170,18 +164,17 @@
 
 <div class="wrap page-title">
   <h1>Shop all apparel</h1>
-  <p>Sizes S&ndash;4XL on apparel, standard options on gear. Prices shown are at cost &mdash; no markup.</p>
+  <p>Sizes S&ndash;4XL on every style. Prices shown are at cost &mdash; no markup.</p>
 </div>
 
 <div class="filter-bar">
   <div class="filter-inner">
     <div class="pills" id="pillGroup">
       <button class="pill active" data-filter="All">All</button>
-      <button class="pill" data-filter="Outerwear">Outerwear</button>
-      <button class="pill" data-filter="Polos & Knits">Polos &amp; Knits</button>
-      <button class="pill" data-filter="Tees & Fleece">Tees &amp; Fleece</button>
-      <button class="pill" data-filter="Headwear">Headwear</button>
-      <button class="pill" data-filter="Gear & Accessories">Gear &amp; Accessories</button>
+      <button class="pill" data-filter="Heritage Collection">Heritage Collection</button>
+      <button class="pill" data-filter="Corporate Communications">Corporate Communications</button>
+      <button class="pill" data-filter="Political Action Committee (PAC)">Political Action Committee (PAC)</button>
+      <button class="pill" data-filter="HR & Employee Research">HR &amp; Employee Research</button>
     </div>
     <span class="result-count mono" id="resultCount">14 items</span>
   </div>
@@ -211,9 +204,7 @@
   </div>
   <div class="drawer-footer">
     <div class="drawer-total"><span>Estimated total</span><span class="mono" id="drawerTotal">$0.00</span></div>
-    <label for="employeeIdInput" class="employee-id-label">Employee ID</label>
-    <input type="text" id="employeeIdInput" class="employee-id-input" placeholder="e.g. NF-4471" autocomplete="off">
-    <button class="add-btn" id="checkoutBtn" style="width:100%; margin-top:12px;">Continue to checkout</button>
+    <button class="add-btn" id="checkoutBtn" style="width:100%;">Continue to checkout</button>
     <p class="checkout-note" id="checkoutError" style="color:var(--flame); display:none;"></p>
     <p class="checkout-note">You'll enter your delivery address and payment details on the next screen, hosted securely by Stripe.</p>
   </div>
@@ -233,36 +224,24 @@ const icons = {
   polo: `<svg viewBox="0 0 100 100"><path d="M36 16 20 24l4 14 8-4v55h36V34l8 4 4-14-16-8"/><path d="M36 16c3 6 8 9 14 9s11-3 14-9"/><path d="M44 16v14l6 6 6-6V16"/><path d="M44 25v6M56 25v6"/></svg>`,
   tee: `<svg viewBox="0 0 100 100"><path d="M36 17 18 26l3 13 11-4v54h36V35l11 4 3-13-18-9"/><path d="M36 17c3 7 8 11 14 11s11-4 14-11"/></svg>`,
   beanie: `<svg viewBox="0 0 100 100"><path d="M22 58c0-18 12-32 28-32s28 14 28 32"/><rect x="20" y="58" width="60" height="14" rx="2"/><path d="M30 65h40M30 71h40" stroke-width="1.6"/><circle cx="50" cy="20" r="4"/><path d="M50 24v6"/></svg>`,
-  cap: `<svg viewBox="0 0 100 100"><path d="M20 55a30 30 0 0 1 60 0"/><path d="M14 58c22 8 50 8 72 0" /><path d="M50 25v6" /><circle cx="50" cy="23" r="3"/><path d="M40 40h20" stroke-width="1.6"/></svg>`,
-  golfballs: `<svg viewBox="0 0 100 100"><rect x="37" y="18" width="26" height="62" rx="13"/><circle cx="50" cy="30" r="2.2"/><circle cx="44" cy="38" r="1.4"/><circle cx="56" cy="38" r="1.4"/><circle cx="50" cy="45" r="1.4"/><circle cx="44" cy="52" r="1.4"/><circle cx="56" cy="52" r="1.4"/><circle cx="50" cy="59" r="1.4"/><circle cx="44" cy="66" r="1.4"/><circle cx="56" cy="66" r="1.4"/></svg>`,
-  pen: `<svg viewBox="0 0 100 100"><path d="M28 72 66 34a6 6 0 0 1 8 8L36 80l-12 3z"/><path d="M60 40l8 8"/><path d="M24 83l4-11"/></svg>`,
-  koozie: `<svg viewBox="0 0 100 100"><path d="M34 28h32v46a4 4 0 0 1-4 4H38a4 4 0 0 1-4-4z"/><path d="M34 40h32M34 52h32" stroke-width="1.6"/></svg>`,
-  bottle: `<svg viewBox="0 0 100 100"><path d="M42 14h16v9l6 7v51a4 4 0 0 1-4 4H40a4 4 0 0 1-4-4V30l6-7z"/><path d="M40 42h20" stroke-width="1.6"/></svg>`,
-  tumbler: `<svg viewBox="0 0 100 100"><path d="M36 24h28l-3 56a4 4 0 0 1-4 4H43a4 4 0 0 1-4-4z"/><ellipse cx="50" cy="24" rx="14" ry="4"/><path d="M64 36h7a6 6 0 0 1 0 12h-6" /></svg>`,
-  duffel: `<svg viewBox="0 0 100 100"><rect x="14" y="42" width="72" height="34" rx="13"/><path d="M30 42c0-10 8-16 20-16s20 6 20 16"/><path d="M14 56h72" stroke-width="1.6"/><circle cx="50" cy="59" r="2.6"/></svg>`
+  cap: `<svg viewBox="0 0 100 100"><path d="M20 55a30 30 0 0 1 60 0"/><path d="M14 58c22 8 50 8 72 0" /><path d="M50 25v6" /><circle cx="50" cy="23" r="3"/><path d="M40 40h20" stroke-width="1.6"/></svg>`
 };
 
 const products = [
-  { id:'nf-01', name:'Ridgeline Insulated Field Jacket', cat:'Outerwear', desc:'Waterproof shell, quilted lining, NF Blue.', price:64, colors:['#0B1F3A','#3A3A3A'], icon:'jacket', tag:'Best seller' },
-  { id:'nf-02', name:'Trailhead Softshell Jacket', cat:'Outerwear', desc:'Wind-resistant softshell for shoulder-season shifts.', price:52, colors:['#0B1F3A','#4B5160'], icon:'jacket', tag:null },
-  { id:'nf-03', name:'Depot Fleece Vest', cat:'Outerwear', desc:'Mid-weight fleece, zip pockets, layers under a coat.', price:34, colors:['#0B1F3A','#E8762C'], icon:'vest', tag:null },
-  { id:'nf-04', name:'Lineman Quarter-Zip Pullover', cat:'Outerwear', desc:'Brushed fleece interior, chest embroidery.', price:38, colors:['#13315C','#16181D'], icon:'quarterzip', tag:'New' },
-  { id:'nf-05', name:'Crew Performance Polo', cat:'Polos & Knits', desc:'Moisture-wicking pique, embroidered flame mark.', price:26, colors:['#0B1F3A','#FFFFFF','#E8762C'], icon:'polo', tag:'Best seller' },
-  { id:'nf-06', name:'Dispatch Long-Sleeve Polo', cat:'Polos & Knits', desc:'Same fit as the classic polo, built for cooler days.', price:29, colors:['#0B1F3A','#4B5160'], icon:'polo', tag:null },
-  { id:'nf-07', name:'Office Pique Polo — Women\u2019s Cut', cat:'Polos & Knits', desc:'Tailored fit, same fabric and flame embroidery.', price:26, colors:['#0B1F3A','#FFFFFF'], icon:'polo', tag:null },
-  { id:'nf-08', name:'Everyday Crewneck Tee', cat:'Tees & Fleece', desc:'Ringspun cotton, screen-printed wordmark.', price:14, colors:['#0B1F3A','#FFFFFF','#4B5160'], icon:'tee', tag:null },
-  { id:'nf-09', name:'Long-Sleeve Job Site Tee', cat:'Tees & Fleece', desc:'Heavier cotton blend for cooler mornings on site.', price:18, colors:['#0B1F3A','#E8762C'], icon:'tee', tag:null },
-  { id:'nf-10', name:'Substation Pullover Hoodie', cat:'Tees & Fleece', desc:'Heavyweight fleece, kangaroo pocket, drawcord hood.', price:36, colors:['#0B1F3A','#16181D'], icon:'hoodie', tag:'Best seller' },
-  { id:'nf-11', name:'Crew Zip Hoodie', cat:'Tees & Fleece', desc:'Full-zip version of the Substation hoodie.', price:40, colors:['#13315C','#4B5160'], icon:'hoodie', tag:null },
-  { id:'nf-12', name:'Winter Watch Cap', cat:'Headwear', desc:'Cuffed knit beanie, embroidered flame mark.', price:12, colors:['#0B1F3A','#16181D'], icon:'beanie', tag:null },
-  { id:'nf-13', name:'Structured Twill Cap', cat:'Headwear', desc:'Adjustable six-panel cap, curved brim.', price:16, colors:['#0B1F3A','#E8762C'], icon:'cap', tag:'Best seller' },
-  { id:'nf-14', name:'Unstructured Dad Cap', cat:'Headwear', desc:'Low-profile fit, soft cotton twill.', price:14, colors:['#4B5160','#FFFFFF'], icon:'cap', tag:'New' },
-  { id:'nf-15', name:'Sleeve of Golf Balls', cat:'Gear & Accessories', desc:'Three tour-grade balls, flame mark printed on each.', price:9, colors:['#FFFFFF'], icon:'golfballs', tag:'New', options:['Sleeve of 3','Dozen'] },
-  { id:'nf-16', name:'Flame Mark Ballpoint Pen', cat:'Gear & Accessories', desc:'Smooth-writing metal pen, laser-engraved logo.', price:3, colors:['#0B1F3A','#4B5160'], icon:'pen', tag:null, options:['Single','Box of 12'] },
-  { id:'nf-17', name:'Can Koozie', cat:'Gear & Accessories', desc:'Neoprene can cooler, keeps drinks cold on site.', price:5, colors:['#0B1F3A','#E8762C'], icon:'koozie', tag:null, options:['Single','4-Pack'] },
-  { id:'nf-18', name:'Insulated Water Bottle', cat:'Gear & Accessories', desc:'24oz stainless steel, double-wall insulation.', price:22, colors:['#0B1F3A','#4B5160'], icon:'bottle', tag:'Best seller', options:['One size'] },
-  { id:'nf-19', name:'Travel Coffee Tumbler', cat:'Gear & Accessories', desc:'16oz leak-proof lid, keeps coffee hot on the road.', price:24, colors:['#0B1F3A','#16181D'], icon:'tumbler', tag:'New', options:['One size'] },
-  { id:'nf-20', name:'Weekend Duffel Bag', cat:'Gear & Accessories', desc:'Durable canvas, reinforced straps, embroidered logo.', price:44, colors:['#0B1F3A','#4B5160'], icon:'duffel', tag:null, options:['One size'] },
+  { id:'nf-01', name:'Ridgeline Insulated Field Jacket', cat:'Heritage Collection', desc:'Waterproof shell, quilted lining, NF Blue.', price:64, colors:['#0B1F3A','#3A3A3A'], icon:'jacket', tag:'Best seller' },
+  { id:'nf-02', name:'Trailhead Softshell Jacket', cat:'Political Action Committee (PAC)', desc:'Wind-resistant softshell for shoulder-season shifts.', price:52, colors:['#0B1F3A','#4B5160'], icon:'jacket', tag:null },
+  { id:'nf-03', name:'Depot Fleece Vest', cat:'Political Action Committee (PAC)', desc:'Mid-weight fleece, zip pockets, layers under a coat.', price:34, colors:['#0B1F3A','#E8762C'], icon:'vest', tag:null },
+  { id:'nf-04', name:'Lineman Quarter-Zip Pullover', cat:'HR & Employee Research', desc:'Brushed fleece interior, chest embroidery.', price:38, colors:['#13315C','#16181D'], icon:'quarterzip', tag:'New' },
+  { id:'nf-05', name:'Crew Performance Polo', cat:'Corporate Communications', desc:'Moisture-wicking pique, embroidered flame mark.', price:26, colors:['#0B1F3A','#FFFFFF','#E8762C'], icon:'polo', tag:'Best seller' },
+  { id:'nf-06', name:'Dispatch Long-Sleeve Polo', cat:'Corporate Communications', desc:'Same fit as the classic polo, built for cooler days.', price:29, colors:['#0B1F3A','#4B5160'], icon:'polo', tag:null },
+  { id:'nf-07', name:'Office Pique Polo — Women\u2019s Cut', cat:'Corporate Communications', desc:'Tailored fit, same fabric and flame embroidery.', price:26, colors:['#0B1F3A','#FFFFFF'], icon:'polo', tag:null },
+  { id:'nf-08', name:'Everyday Crewneck Tee', cat:'Heritage Collection', desc:'Ringspun cotton, screen-printed wordmark.', price:14, colors:['#0B1F3A','#FFFFFF','#4B5160'], icon:'tee', tag:null },
+  { id:'nf-09', name:'Long-Sleeve Job Site Tee', cat:'HR & Employee Research', desc:'Heavier cotton blend for cooler mornings on site.', price:18, colors:['#0B1F3A','#E8762C'], icon:'tee', tag:null },
+  { id:'nf-10', name:'Substation Pullover Hoodie', cat:'Heritage Collection', desc:'Heavyweight fleece, kangaroo pocket, drawcord hood.', price:36, colors:['#0B1F3A','#16181D'], icon:'hoodie', tag:'Best seller' },
+  { id:'nf-11', name:'Crew Zip Hoodie', cat:'Political Action Committee (PAC)', desc:'Full-zip version of the Substation hoodie.', price:40, colors:['#13315C','#4B5160'], icon:'hoodie', tag:null },
+  { id:'nf-12', name:'Winter Watch Cap', cat:'Heritage Collection', desc:'Cuffed knit beanie, embroidered flame mark.', price:12, colors:['#0B1F3A','#16181D'], icon:'beanie', tag:null },
+  { id:'nf-13', name:'Structured Twill Cap', cat:'Corporate Communications', desc:'Adjustable six-panel cap, curved brim.', price:16, colors:['#0B1F3A','#E8762C'], icon:'cap', tag:'Best seller' },
+  { id:'nf-14', name:'Unstructured Dad Cap', cat:'HR & Employee Research', desc:'Low-profile fit, soft cotton twill.', price:14, colors:['#4B5160','#FFFFFF'], icon:'cap', tag:'New' },
 ];
 
 const sizes = ['S','M','L','XL','2XL','3XL','4XL'];
@@ -423,13 +402,6 @@ document.getElementById('checkoutBtn').addEventListener('click', async () => {
 
   if (cart.length === 0) return;
 
-  const employeeId = document.getElementById('employeeIdInput').value.trim();
-  if (!employeeId) {
-    errorEl.textContent = 'Please enter your employee ID to continue.';
-    errorEl.style.display = 'block';
-    return;
-  }
-
   if (API_BASE.includes('YOUR-BACKEND-PROJECT')) {
     errorEl.textContent = 'Checkout isn\u2019t connected to a backend yet \u2014 see nf-backend/README.md.';
     errorEl.style.display = 'block';
@@ -446,7 +418,7 @@ document.getElementById('checkoutBtn').addEventListener('click', async () => {
     const res = await fetch(`${API_BASE}/api/create-checkout-session`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ items, employeeId }),
+      body: JSON.stringify({ items }),
     });
     const data = await res.json();
 
