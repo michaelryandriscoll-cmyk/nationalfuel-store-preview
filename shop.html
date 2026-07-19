@@ -129,6 +129,12 @@
   .drawer-footer{border-top:1px solid var(--line); padding:18px 22px 22px;}
   .drawer-total{display:flex; justify-content:space-between; font-weight:700; font-size:15px; margin-bottom:14px;}
   .checkout-note{font-size:12px; color:var(--ink-soft); margin-top:10px; line-height:1.5;}
+  .employee-id-label{display:block; font-size:11px; text-transform:uppercase; letter-spacing:0.06em; color:var(--ink-soft); font-weight:600; margin-bottom:6px;}
+  .employee-id-input{
+    width:100%; border:1px solid var(--line); border-radius:4px; padding:10px 12px;
+    font-family:'Roboto Mono', monospace; font-size:13px; color:var(--ink); background:var(--white);
+  }
+  .employee-id-input:focus{border-color:var(--navy);}
 
   @media (max-width:1000px){ .grid{grid-template-columns:repeat(2, 1fr);} }
   @media (max-width:720px){
@@ -205,12 +211,19 @@
   </div>
   <div class="drawer-footer">
     <div class="drawer-total"><span>Estimated total</span><span class="mono" id="drawerTotal">$0.00</span></div>
-    <button class="add-btn" id="checkoutBtn" style="width:100%;">Continue to checkout</button>
-    <p class="checkout-note">Prototype only &mdash; no payment is processed. Final checkout will confirm employee ID, size, and delivery location.</p>
+    <label for="employeeIdInput" class="employee-id-label">Employee ID</label>
+    <input type="text" id="employeeIdInput" class="employee-id-input" placeholder="e.g. NF-4471" autocomplete="off">
+    <button class="add-btn" id="checkoutBtn" style="width:100%; margin-top:12px;">Continue to checkout</button>
+    <p class="checkout-note" id="checkoutError" style="color:var(--flame); display:none;"></p>
+    <p class="checkout-note">You'll enter your delivery address and payment details on the next screen, hosted securely by Stripe.</p>
   </div>
 </aside>
 
 <script>
+/* Point this at your deployed backend (see nf-backend/README.md).
+   Leave as-is and checkout will fall back to a "not connected yet" message. */
+const API_BASE = 'https://nationalfuel-store-backend.vercel.app';
+
 /* Garment icon library (line-art) */
 const icons = {
   jacket: `<svg viewBox="0 0 100 100"><path d="M35 14 22 22 12 40l8 8 6-6v40h48V42l6 6 8-8-10-18-13-8"/><path d="M35 14c3 6 8 10 15 10s12-4 15-10"/><path d="M50 24v58"/><path d="M28 60h6M28 70h6"/></svg>`,
@@ -404,12 +417,61 @@ document.getElementById('cartCloseBtn').addEventListener('click', closeDrawer);
 overlay.addEventListener('click', closeDrawer);
 document.addEventListener('keydown', (e) => { if(e.key === 'Escape') closeDrawer(); });
 
-document.getElementById('checkoutBtn').addEventListener('click', () => {
-  if(cart.length === 0){ return; }
-  alert('Prototype checkout — in the live store this step will confirm your employee ID, delivery location, and payment details before submitting the order.');
+document.getElementById('checkoutBtn').addEventListener('click', async () => {
+  const errorEl = document.getElementById('checkoutError');
+  errorEl.style.display = 'none';
+
+  if (cart.length === 0) return;
+
+  const employeeId = document.getElementById('employeeIdInput').value.trim();
+  if (!employeeId) {
+    errorEl.textContent = 'Please enter your employee ID to continue.';
+    errorEl.style.display = 'block';
+    return;
+  }
+
+  if (API_BASE.includes('YOUR-BACKEND-PROJECT')) {
+    errorEl.textContent = 'Checkout isn\u2019t connected to a backend yet \u2014 see nf-backend/README.md.';
+    errorEl.style.display = 'block';
+    return;
+  }
+
+  const checkoutBtn = document.getElementById('checkoutBtn');
+  const originalLabel = checkoutBtn.textContent;
+  checkoutBtn.textContent = 'Redirecting to checkout\u2026';
+  checkoutBtn.disabled = true;
+
+  try {
+    const items = cart.map(l => ({ id: l.id, size: l.size, qty: l.qty }));
+    const res = await fetch(`${API_BASE}/api/create-checkout-session`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ items, employeeId }),
+    });
+    const data = await res.json();
+
+    if (!res.ok || !data.url) {
+      throw new Error(data.error || 'Checkout could not be started.');
+    }
+    window.location.href = data.url;
+  } catch (err) {
+    errorEl.textContent = err.message || 'Something went wrong. Please try again.';
+    errorEl.style.display = 'block';
+    checkoutBtn.textContent = originalLabel;
+    checkoutBtn.disabled = false;
+  }
 });
 
 renderCart();
+
+/* Handle the redirect back from Stripe Checkout */
+const orderStatus = new URLSearchParams(window.location.search).get('order');
+if (orderStatus === 'success') {
+  cart = [];
+  saveCart();
+  renderCart();
+  alert('Thanks! Your order has been placed and will ship soon.');
+}
 </script>
 
 </body>
