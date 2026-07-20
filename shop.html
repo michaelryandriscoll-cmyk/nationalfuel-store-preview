@@ -66,6 +66,13 @@
   /* Filter bar */
   .filter-bar{position:sticky; top:63px; z-index:30; background:var(--paper); border-bottom:1px solid var(--line); margin-top:18px;}
   .filter-inner{max-width:var(--max); margin:0 auto; padding:14px 32px; display:flex; align-items:center; justify-content:space-between; gap:20px; flex-wrap:wrap;}
+  .dept-row{padding-top:0; padding-bottom:14px; justify-content:flex-start; gap:10px;}
+  .dept-label{font-size:12px; color:var(--ink-soft); font-weight:600; white-space:nowrap;}
+  .dept-select{
+    font-family:'Roboto', sans-serif; font-size:13px; color:var(--ink);
+    border:1px solid var(--line); border-radius:999px; padding:6px 14px;
+    background:var(--white); max-width:280px;
+  }
   .pills{display:flex; gap:8px; flex-wrap:wrap;}
   .pill{background:var(--white); border:1px solid var(--line); color:var(--ink); padding:8px 16px; border-radius:999px; font-size:13px; font-weight:600; transition:all .15s ease;}
   .pill:hover{border-color:var(--navy);}
@@ -178,6 +185,16 @@
     </div>
     <span class="result-count mono" id="resultCount">8 items</span>
   </div>
+  <div class="filter-inner dept-row">
+    <label for="deptSelect" class="dept-label">Ordering for:</label>
+    <select id="deptSelect" class="dept-select">
+      <option value="">Select a department (optional)</option>
+      <option value="Heritage Collection">Heritage Collection</option>
+      <option value="Corporate Communications">Corporate Communications</option>
+      <option value="Political Action Committee (PAC)">Political Action Committee (PAC)</option>
+      <option value="HR & Employee Research">HR &amp; Employee Research</option>
+    </select>
+  </div>
 </div>
 
 <main>
@@ -231,9 +248,9 @@ const products = [
   { id:'nf-03', name:'Rugged Tee', brand:'Carhartt \u00b7 CTK87', cat:'Field Essentials', desc:'Durable pocket tee built for real workwear conditions.', price:24, colors:['#0B1F3A','#16181D'], icon:'tee', photo:'https://cdnp.sanmar.com/medias/sys_master/images/h98/h4e/15638657564702/1200W_9550_Navy-0-CTK87NavyModelFront4/1200W-9550-Navy-0-CTK87NavyModelFront4.jpg', tag:null },
   { id:'nf-04', name:'Premium Polo', brand:'TravisMathew \u00b7 Coto Performance Polo', cat:'Office Apparel', desc:'Wrinkle-resistant, quick-drying \u2014 for leadership and client-facing roles.', price:58, colors:['#0B1F3A','#16181D'], icon:'polo', photo:'https://cdnp.sanmar.com/medias/sys_master/images/h90/h4c/16315901804574/1200W_11124_VtgIdgBlk-0-TM1MU410VtgIdgBlkModelFront2/1200W-11124-VtgIdgBlk-0-TM1MU410VtgIdgBlkModelFront2.jpg', tag:'New' },
   { id:'nf-05', name:'Executive Woven', brand:'Eddie Bauer \u00b7 Stretch Button Down', cat:'Office Apparel', desc:'Polished stretch woven shirt for executive and government affairs.', price:52, colors:['#0B1F3A','#FFFFFF'], icon:'buttondown', tag:null },
-  { id:'nf-06', name:'Premium Hoodie', brand:'Carhartt \u00b7 Rain Defender Hoodie', cat:'Outerwear', desc:'Water-repellent heavyweight hoodie for outerwear or workwear layering.', price:54, colors:['#0B1F3A','#16181D'], icon:'hoodie', tag:'Best seller' },
-  { id:'nf-07', name:'Fleece Jacket', brand:'Eddie Bauer \u00b7 Full-Zip Fleece', cat:'Outerwear', desc:'Smooth-faced fleece for office layering and travel.', price:56, colors:['#0B1F3A','#4B5160'], icon:'jacket', tag:null },
-  { id:'nf-08', name:'Snapback Cap', brand:'New Era \u00b7 NE205', cat:'Accessories', desc:'Universal branded headwear, one size fits most.', price:22, colors:['#0B1F3A','#E8762C'], icon:'cap', tag:null },
+  { id:'nf-06', name:'Premium Hoodie', brand:'Carhartt \u00b7 Rain Defender Hoodie', cat:'Outerwear', desc:'Water-repellent heavyweight hoodie for outerwear or workwear layering.', price:54, colors:['#0B1F3A','#16181D'], icon:'hoodie', photo:'https://cdnp.sanmar.com/medias/sys_master/images/h31/h3e/33039515123742/1200W_9604_CarbonHthr-0-CT100615CarbonHthrModelFront4/1200W-9604-CarbonHthr-0-CT100615CarbonHthrModelFront4.jpg', tag:'Best seller' },
+  { id:'nf-07', name:'Fleece Jacket', brand:'Eddie Bauer \u00b7 Full-Zip Fleece', cat:'Outerwear', desc:'Smooth-faced fleece for office layering and travel.', price:56, colors:['#0B1F3A','#4B5160'], icon:'jacket', photo:'https://cdnp.sanmar.com/medias/sys_master/images/h82/he5/28740597645342/1200W_7621_DkCharHth-0-EB238DkCharHthModelFront4/1200W-7621-DkCharHth-0-EB238DkCharHthModelFront4.jpg', tag:null },
+  { id:'nf-08', name:'Snapback Cap', brand:'New Era \u00b7 NE205', cat:'Accessories', desc:'Universal branded headwear, one size fits most.', price:22, colors:['#0B1F3A','#E8762C'], icon:'cap', photo:'https://cdnp.sanmar.com/medias/sys_master/images/h97/h6e/14861601734686/1200W_6685_KellyWht-1-NE205KellyWhtHatLeft/1200W-6685-KellyWht-1-NE205KellyWhtHatLeft.jpg', tag:null },
 ];
 
 const sizes = ['S','M','L','XL','2XL','3XL','4XL'];
@@ -410,7 +427,7 @@ document.getElementById('checkoutBtn').addEventListener('click', async () => {
     const res = await fetch(`${API_BASE}/api/create-checkout-session`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ items }),
+      body: JSON.stringify({ items, department: document.getElementById('deptSelect').value || null }),
     });
     const data = await res.json();
 
